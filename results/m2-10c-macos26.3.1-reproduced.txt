@@ -1,0 +1,104 @@
+Apple OpenCL silent-abort report
+generated 2026-09-16T13:51:16Z  (schema 1)
+
+== machine ==
+model            : Mac14,7   [hostname and timestamps removed for publication]
+chip             : Apple M2
+cpu cores        : 8 (4 perf + 4 eff)
+memory           : 16 GB
+arch             : arm64
+
+== os ==
+macOS            : 26.3.1 (25D771280a)
+darwin           : 25.3.0
+
+== gpu ==
+gpu              : Chipset Model: Apple M2
+gpu              : Total Number of Cores: 10
+gpu              : Vendor: Apple (0x106b)
+gpu              : Metal Support: Metal 4
+external display : 1 display entries reported
+
+== build ==
+opencl probe     : ok
+metal probe      : ok
+
+== probe results ==
+Same kernel arithmetic through both APIs.  'unwritten' counts work-items
+whose output still holds the 0xDEADBEEF sentinel, i.e. never ran.
+
+-- 20000 work-items, 1000000 iterations each --
+  opencl device    : Apple M2
+  opencl version   : OpenCL 1.2 
+  opencl driver    : 1.2 1.0
+  opencl cu        : 10
+    OpenCL run 0:    0.167s enqueue=0 finish=0 event_status=0 unwritten=0/20000 (0.0%)
+    OpenCL run 1:    0.157s enqueue=0 finish=0 event_status=0 unwritten=0/20000 (0.0%)
+    OpenCL run 2:    0.156s enqueue=0 finish=0 event_status=0 unwritten=0/20000 (0.0%)
+  metal device     : Apple M2
+    Metal  run 0:    0.156s status=Completed error=(nil) unwritten=0/20000 (0.0%)
+    Metal  run 1:    0.156s status=Completed error=(nil) unwritten=0/20000 (0.0%)
+    Metal  run 2:    0.155s status=Completed error=(nil) unwritten=0/20000 (0.0%)
+
+-- 20000 work-items, 20000000 iterations each --
+  opencl device    : Apple M2
+  opencl version   : OpenCL 1.2 
+  opencl driver    : 1.2 1.0
+  opencl cu        : 10
+    OpenCL run 0:    0.527s enqueue=0 finish=0 event_status=0 unwritten=20000/20000 (100.0%)
+    OpenCL run 1:    0.518s enqueue=0 finish=0 event_status=0 unwritten=20000/20000 (100.0%)
+    OpenCL run 2:    0.513s enqueue=0 finish=0 event_status=0 unwritten=20000/20000 (100.0%)
+  metal device     : Apple M2
+    Metal  run 0:    3.088s status=Completed error=(nil) unwritten=0/20000 (0.0%)
+    Metal  run 1:    3.091s status=Completed error=(nil) unwritten=0/20000 (0.0%)
+    Metal  run 2:    3.101s status=Completed error=(nil) unwritten=0/20000 (0.0%)
+
+-- 20000 work-items, 100000000 iterations each --
+  opencl device    : Apple M2
+  opencl version   : OpenCL 1.2 
+  opencl driver    : 1.2 1.0
+  opencl cu        : 10
+    OpenCL run 0:    0.535s enqueue=0 finish=0 event_status=0 unwritten=20000/20000 (100.0%)
+    OpenCL run 1:    0.526s enqueue=0 finish=0 event_status=0 unwritten=20000/20000 (100.0%)
+    OpenCL run 2:    0.520s enqueue=0 finish=0 event_status=0 unwritten=20000/20000 (100.0%)
+  metal device     : Apple M2
+    Metal  run 0:   15.527s status=Completed error=(nil) unwritten=0/20000 (0.0%)
+    Metal  run 1:   15.433s status=Completed error=(nil) unwritten=0/20000 (0.0%)
+    Metal  run 2:   15.408s status=Completed error=(nil) unwritten=0/20000 (0.0%)
+
+-- 20000 work-items, 400000000 iterations each --
+  opencl device    : Apple M2
+  opencl version   : OpenCL 1.2 
+  opencl driver    : 1.2 1.0
+  opencl cu        : 10
+    OpenCL run 0:    0.532s enqueue=0 finish=0 event_status=0 unwritten=20000/20000 (100.0%)
+    OpenCL run 1:    0.516s enqueue=0 finish=0 event_status=0 unwritten=20000/20000 (100.0%)
+    OpenCL run 2:    0.520s enqueue=0 finish=0 event_status=0 unwritten=20000/20000 (100.0%)
+  metal device     : Apple M2
+    Metal  run 0:   10.394s status=Error     error=Impacting Interactivity (0000000e:kIOGPUCommandBufferCallbackErrorImpactingInteractivity) unwritten=20000/20000 (100.0%)
+    Metal  run 1:   61.728s status=Completed error=(nil) unwritten=0/20000 (0.0%)
+    Metal  run 2:   61.335s status=Completed error=(nil) unwritten=0/20000 (0.0%)
+
+== macOS log, command-buffer aborts during this run ==
+predicate: eventMessage CONTAINS "command buffer was aborted"  (last 5m)
+
+  2026-09-16 14:51:19.200530+0100 0x50741f   Error       0x0                  27691  0    ocl: (Metal) Execution of the command buffer was aborted due to an error during execution. Impacting Interactivity (0000000e:kIOGPUCommandBufferCallbackErrorImpactingInteractivity)
+  2026-09-16 14:51:19.720612+0100 0x50741e   Error       0x0                  27691  0    ocl: (Metal) Execution of the command buffer was aborted due to an error during execution. Impacting Interactivity (0000000e:kIOGPUCommandBufferCallbackErrorImpactingInteractivity)
+  2026-09-16 14:51:20.233672+0100 0x50741e   Error       0x0                  27691  0    ocl: (Metal) Execution of the command buffer was aborted due to an error during execution. Impacting Interactivity (0000000e:kIOGPUCommandBufferCallbackErrorImpactingInteractivity)
+  2026-09-16 14:51:30.105526+0100 0x507646   Error       0x0                  27913  0    ocl: (Metal) Execution of the command buffer was aborted due to an error during execution. Impacting Interactivity (0000000e:kIOGPUCommandBufferCallbackErrorImpactingInteractivity)
+  2026-09-16 14:51:30.631626+0100 0x507646   Error       0x0                  27913  0    ocl: (Metal) Execution of the command buffer was aborted due to an error during execution. Impacting Interactivity (0000000e:kIOGPUCommandBufferCallbackErrorImpactingInteractivity)
+  2026-09-16 14:51:31.152579+0100 0x507648   Error       0x0                  27913  0    ocl: (Metal) Execution of the command buffer was aborted due to an error during execution. Impacting Interactivity (0000000e:kIOGPUCommandBufferCallbackErrorImpactingInteractivity)
+  2026-09-16 14:52:18.118070+0100 0x507ef4   Error       0x0                  28878  0    ocl: (Metal) Execution of the command buffer was aborted due to an error during execution. Impacting Interactivity (0000000e:kIOGPUCommandBufferCallbackErrorImpactingInteractivity)
+  2026-09-16 14:52:18.635783+0100 0x507ef4   Error       0x0                  28878  0    ocl: (Metal) Execution of the command buffer was aborted due to an error during execution. Impacting Interactivity (0000000e:kIOGPUCommandBufferCallbackErrorImpactingInteractivity)
+  2026-09-16 14:52:19.156216+0100 0x507ef6   Error       0x0                  28878  0    ocl: (Metal) Execution of the command buffer was aborted due to an error during execution. Impacting Interactivity (0000000e:kIOGPUCommandBufferCallbackErrorImpactingInteractivity)
+  2026-09-16 14:52:29.576177+0100 0x507f56   Error       0x0                  28909  0    mtl: (Metal) Execution of the command buffer was aborted due to an error during execution. Impacting Interactivity (0000000e:kIOGPUCommandBufferCallbackErrorImpactingInteractivity)
+
+abort log lines  : 10
+
+== verdict ==
+OpenCL dispatches reporting success with unwritten output : 9
+Metal dispatches reporting Error                          : 1
+RESULT: REPRODUCED -- OpenCL reported success for dispatches that did not
+        run, while Metal reported the abort on this same machine.
+
+-- end of report --

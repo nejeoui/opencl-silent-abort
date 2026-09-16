@@ -1,0 +1,13 @@
+# Build artifacts from metalprobe.m / probe_real_kernel.c
+metalprobe
+probe_real_kernel
+ocl
+mtl
+*.o
+*.dSYM/
+
+# Reports the probe writes (contributors submit these via pull request or
+# issue, into results/ under an explicit name — not as stray files)
+apple-opencl-abort-report-*.txt
+
+.DS_Store
