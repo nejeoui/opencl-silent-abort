@@ -176,9 +176,7 @@ available interfaces.
   privilege, discloses no data and offers no exploitation path. It is published
   because it silently corrupts measurements.
 - **Reported to Apple** via Feedback Assistant before publication:
-  **FB24808475**. The exact submission is in
-  [`APPLE_FEEDBACK.md`](APPLE_FEEDBACK.md), so anyone filing a corroborating
-  report can reuse it.
+  **FB24808475**.
 
 Two questions are kept separate throughout. Whether macOS *should* terminate
 compute work that starves the display is a design decision, and a defensible
