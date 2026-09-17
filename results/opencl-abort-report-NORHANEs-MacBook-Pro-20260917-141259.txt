@@ -1,0 +1,86 @@
+Apple OpenCL silent-abort report
+generated 2026-09-17T13:12:59Z  (schema 1)
+
+== machine ==
+model            : MacBookPro18,4
+chip             : Apple M1 Max
+cpu cores        : 10 (8 perf + 2 eff)
+memory           : 32 GB
+arch             : arm64
+
+== os ==
+macOS            : 14.1.1 (23B81)
+darwin           : 23.1.0
+
+== gpu ==
+gpu              : Chipset Model: Apple M1 Max
+gpu              : Total Number of Cores: 32
+gpu              : Vendor: Apple (0x106b)
+gpu              : Metal Support: Metal 3
+external display : 1 display entries reported
+
+== build ==
+opencl probe     : ok
+metal probe      : ok
+
+== probe results ==
+Same kernel arithmetic through both APIs.  'unwritten' counts work-items
+whose output still holds the 0xDEADBEEF sentinel, i.e. never ran.
+
+-- 20000 work-items, 1000000 iterations each --
+  opencl device    : Apple M1 Max
+  opencl version   : OpenCL 1.2 
+  opencl driver    : 1.2 1.0
+  opencl cu        : 32
+    OpenCL run 0:    0.089s enqueue=0 finish=0 event_status=0 unwritten=0/20000 (0.0%)
+    OpenCL run 1:    0.081s enqueue=0 finish=0 event_status=0 unwritten=0/20000 (0.0%)
+    OpenCL run 2:    0.081s enqueue=0 finish=0 event_status=0 unwritten=0/20000 (0.0%)
+  METAL_UNAVAILABLE
+
+-- 20000 work-items, 20000000 iterations each --
+  opencl device    : Apple M1 Max
+  opencl version   : OpenCL 1.2 
+  opencl driver    : 1.2 1.0
+  opencl cu        : 32
+    OpenCL run 0:    1.613s enqueue=0 finish=0 event_status=0 unwritten=0/20000 (0.0%)
+    OpenCL run 1:    1.604s enqueue=0 finish=0 event_status=0 unwritten=0/20000 (0.0%)
+    OpenCL run 2:    1.605s enqueue=0 finish=0 event_status=0 unwritten=0/20000 (0.0%)
+  METAL_UNAVAILABLE
+
+-- 20000 work-items, 100000000 iterations each --
+  opencl device    : Apple M1 Max
+  opencl version   : OpenCL 1.2 
+  opencl driver    : 1.2 1.0
+  opencl cu        : 32
+    OpenCL run 0:    8.020s enqueue=0 finish=0 event_status=0 unwritten=0/20000 (0.0%)
+    OpenCL run 1:    8.020s enqueue=0 finish=0 event_status=0 unwritten=0/20000 (0.0%)
+    OpenCL run 2:    8.009s enqueue=0 finish=0 event_status=0 unwritten=0/20000 (0.0%)
+  METAL_UNAVAILABLE
+
+-- 20000 work-items, 400000000 iterations each --
+  opencl device    : Apple M1 Max
+  opencl version   : OpenCL 1.2 
+  opencl driver    : 1.2 1.0
+  opencl cu        : 32
+    OpenCL run 0:    1.126s enqueue=0 finish=0 event_status=0 unwritten=20000/20000 (100.0%)
+    OpenCL run 1:    0.515s enqueue=0 finish=0 event_status=0 unwritten=20000/20000 (100.0%)
+    OpenCL run 2:   32.046s enqueue=0 finish=0 event_status=0 unwritten=0/20000 (0.0%)
+  METAL_UNAVAILABLE
+
+== macOS log, command-buffer aborts during this run ==
+predicate: eventMessage CONTAINS "command buffer was aborted"  (last 3m)
+
+  2026-09-17 14:13:31.181940+0100 0xc853     Error       0x0                  2534   0    ocl: (Metal) Execution of the command buffer was aborted due to an error during execution. <private>
+  2026-09-17 14:13:31.698971+0100 0xc853     Error       0x0                  2534   0    ocl: (Metal) Execution of the command buffer was aborted due to an error during execution. <private>
+
+abort log lines  : 2
+
+== verdict ==
+OpenCL dispatches reporting success with unwritten output : 2
+Metal dispatches reporting Error                          : 0
+RESULT: REPRODUCED (OpenCL side) -- OpenCL reported success for
+        dispatches that did not run, which is the defect itself.  Metal
+        happened not to abort during its own runs here, so the
+        side-by-side contrast is weaker; re-running usually shows it.
+
+-- end of report --
