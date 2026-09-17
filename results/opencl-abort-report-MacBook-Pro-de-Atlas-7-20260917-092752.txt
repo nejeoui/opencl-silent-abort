@@ -1,0 +1,104 @@
+Apple OpenCL silent-abort report
+generated 2026-09-17T08:27:52Z  (schema 1)
+
+== machine ==
+model            : MacBookPro17,1
+chip             : Apple M1
+cpu cores        : 8 (4 perf + 4 eff)
+memory           : 8 GB
+arch             : arm64
+
+== os ==
+macOS            : 15.3 (24D5034f)
+darwin           : 24.3.0
+
+== gpu ==
+gpu              : Chipset Model: Apple M1
+gpu              : Total Number of Cores: 8
+gpu              : Vendor: Apple (0x106b)
+gpu              : Metal Support: Metal 3
+external display : 1 display entries reported
+
+== build ==
+opencl probe     : ok
+metal probe      : ok
+
+== probe results ==
+Same kernel arithmetic through both APIs.  'unwritten' counts work-items
+whose output still holds the 0xDEADBEEF sentinel, i.e. never ran.
+
+-- 20000 work-items, 1000000 iterations each --
+  opencl device    : Apple M1
+  opencl version   : OpenCL 1.2 
+  opencl driver    : 1.2 1.0
+  opencl cu        : 8
+    OpenCL run 0:    0.241s enqueue=0 finish=0 event_status=0 unwritten=0/20000 (0.0%)
+    OpenCL run 1:    0.204s enqueue=0 finish=0 event_status=0 unwritten=0/20000 (0.0%)
+    OpenCL run 2:    0.190s enqueue=0 finish=0 event_status=0 unwritten=0/20000 (0.0%)
+  metal device     : Apple M1
+    Metal  run 0:    0.196s status=Completed error=(nil) unwritten=0/20000 (0.0%)
+    Metal  run 1:    0.229s status=Completed error=(nil) unwritten=0/20000 (0.0%)
+    Metal  run 2:    0.289s status=Completed error=(nil) unwritten=0/20000 (0.0%)
+
+-- 20000 work-items, 20000000 iterations each --
+  opencl device    : Apple M1
+  opencl version   : OpenCL 1.2 
+  opencl driver    : 1.2 1.0
+  opencl cu        : 8
+    OpenCL run 0:    0.806s enqueue=0 finish=0 event_status=0 unwritten=20000/20000 (100.0%)
+    OpenCL run 1:    5.986s enqueue=0 finish=0 event_status=0 unwritten=0/20000 (0.0%)
+    OpenCL run 2:    5.636s enqueue=0 finish=0 event_status=0 unwritten=0/20000 (0.0%)
+  metal device     : Apple M1
+    Metal  run 0:    5.371s status=Completed error=(nil) unwritten=0/20000 (0.0%)
+    Metal  run 1:    5.560s status=Completed error=(nil) unwritten=0/20000 (0.0%)
+    Metal  run 2:    5.616s status=Completed error=(nil) unwritten=0/20000 (0.0%)
+
+-- 20000 work-items, 100000000 iterations each --
+  opencl device    : Apple M1
+  opencl version   : OpenCL 1.2 
+  opencl driver    : 1.2 1.0
+  opencl cu        : 8
+    OpenCL run 0:    0.732s enqueue=0 finish=0 event_status=0 unwritten=20000/20000 (100.0%)
+    OpenCL run 1:    0.521s enqueue=0 finish=0 event_status=0 unwritten=20000/20000 (100.0%)
+    OpenCL run 2:    9.694s enqueue=0 finish=0 event_status=0 unwritten=20000/20000 (100.0%)
+  metal device     : Apple M1
+    Metal  run 0:   27.249s status=Completed error=(nil) unwritten=0/20000 (0.0%)
+    Metal  run 1:   27.282s status=Completed error=(nil) unwritten=0/20000 (0.0%)
+    Metal  run 2:   28.093s status=Completed error=(nil) unwritten=0/20000 (0.0%)
+
+-- 20000 work-items, 400000000 iterations each --
+  opencl device    : Apple M1
+  opencl version   : OpenCL 1.2 
+  opencl driver    : 1.2 1.0
+  opencl cu        : 8
+    OpenCL run 0:    0.515s enqueue=0 finish=0 event_status=0 unwritten=20000/20000 (100.0%)
+    OpenCL run 1:    0.504s enqueue=0 finish=0 event_status=0 unwritten=20000/20000 (100.0%)
+    OpenCL run 2:    0.537s enqueue=0 finish=0 event_status=0 unwritten=20000/20000 (100.0%)
+  metal device     : Apple M1
+    Metal  run 0:    5.254s status=Error     error=Internal Error (0000000e:Internal Error) unwritten=20000/20000 (100.0%)
+    Metal  run 1:   10.897s status=Error     error=Internal Error (0000000e:Internal Error) unwritten=20000/20000 (100.0%)
+    Metal  run 2:    9.203s status=Error     error=Internal Error (0000000e:Internal Error) unwritten=20000/20000 (100.0%)
+
+== macOS log, command-buffer aborts during this run ==
+predicate: eventMessage CONTAINS "command buffer was aborted"  (last 4m)
+
+  2026-09-17 09:28:03.081391+0100 0x171969   Error       0x0                  19758  0    ocl: (Metal) Execution of the command buffer was aborted due to an error during execution. Internal Error (0000000e:Internal Error)
+  2026-09-17 09:28:32.130009+0100 0x171ade   Error       0x0                  19779  0    ocl: (Metal) Execution of the command buffer was aborted due to an error during execution. Internal Error (0000000e:Internal Error)
+  2026-09-17 09:28:32.653045+0100 0x171ade   Error       0x0                  19779  0    ocl: (Metal) Execution of the command buffer was aborted due to an error during execution. Internal Error (0000000e:Internal Error)
+  2026-09-17 09:28:42.349489+0100 0x171ade   Error       0x0                  19779  0    ocl: (Metal) Execution of the command buffer was aborted due to an error during execution. Internal Error (0000000e:Internal Error)
+  2026-09-17 09:30:05.613166+0100 0x171f20   Error       0x0                  19836  0    ocl: (Metal) Execution of the command buffer was aborted due to an error during execution. Internal Error (0000000e:Internal Error)
+  2026-09-17 09:30:06.121128+0100 0x171f25   Error       0x0                  19836  0    ocl: (Metal) Execution of the command buffer was aborted due to an error during execution. Internal Error (0000000e:Internal Error)
+  2026-09-17 09:30:06.660804+0100 0x171f25   Error       0x0                  19836  0    ocl: (Metal) Execution of the command buffer was aborted due to an error during execution. Internal Error (0000000e:Internal Error)
+  2026-09-17 09:30:11.986657+0100 0x171f5d   Error       0x0                  19838  0    mtl: (Metal) Execution of the command buffer was aborted due to an error during execution. Internal Error (0000000e:Internal Error)
+  2026-09-17 09:30:22.884343+0100 0x171f5c   Error       0x0                  19838  0    mtl: (Metal) Execution of the command buffer was aborted due to an error during execution. Internal Error (0000000e:Internal Error)
+  2026-09-17 09:30:32.087682+0100 0x171f5c   Error       0x0                  19838  0    mtl: (Metal) Execution of the command buffer was aborted due to an error during execution. Internal Error (0000000e:Internal Error)
+
+abort log lines  : 10
+
+== verdict ==
+OpenCL dispatches reporting success with unwritten output : 7
+Metal dispatches reporting Error                          : 3
+RESULT: REPRODUCED -- OpenCL reported success for dispatches that did not
+        run, while Metal reported the abort on this same machine.
+
+-- end of report --
