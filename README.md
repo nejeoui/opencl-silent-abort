@@ -1,5 +1,8 @@
 # macOS OpenCL silently reports success for aborted dispatches
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22838343.svg)](https://doi.org/10.5281/zenodo.22838343)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 **On macOS, Apple's OpenCL can report that a kernel finished successfully when
 the GPU never ran it.** The output buffer comes back untouched, and
 `clEnqueueNDRangeKernel`, `clFinish` and `CL_EVENT_COMMAND_EXECUTION_STATUS`
@@ -68,9 +71,36 @@ just as valuable — they bound the problem.
 
 ### Results so far
 
+Two chip generations, three major macOS releases, GPU core counts from 8 to 32
+— all four reproduce it.
+
 | Chip | GPU cores | RAM | macOS | Verdict | Report |
 |---|---|---|---|---|---|
-| Apple M2 | 10 | 16 GB | 26.3.1 (25D771280a) | `REPRODUCED` | [`m2-10c-...txt`](results/m2-10c-macos26.3.1-reproduced.txt) |
+| Apple M2 | 10 | 16 GB | 26.3.1 (25D771280a) | `REPRODUCED` | [report](results/m2-10c-macos26.3.1-reproduced.txt) |
+| Apple M2 | 8 | 8 GB | 26.2 (25C56) | `REPRODUCED` | [report](results/m2-8c-macos26.2-reproduced.txt) |
+| Apple M1 | 8 | 8 GB | 15.3 (24D5034f) | `REPRODUCED` | [report](results/m1-8c-macos15.3-reproduced.txt) |
+| Apple M1 Max | 32 | 32 GB | 14.1.1 (23B81) | `REPRODUCED (OpenCL side)` | [report](results/m1max-32c-macos14.1.1-reproduced-opencl-side.txt) |
+
+Across them, **21 OpenCL dispatches returned `CL_COMPLETE` having written none
+of their 20 000 work-items.** Seventeen of those returned within
+**0.504–0.537 s** (mean 0.520 s, s.d. 0.009 s) — the same half second regardless
+of machine, GPU width, OS release, or a 20× range of requested work. If a heavy
+OpenCL dispatch on Apple silicon comes back in about half a second, it did not
+run.
+
+Two further findings from the matched probes:
+
+- **The OpenCL path is aborted at less work than the Metal path**, on the same
+  device with identical arithmetic, at no cost in throughput at loads both
+  survive. On one machine Metal completed every run of a 15.4 s dispatch while
+  OpenCL abandoned every run of one Metal finished in 3.1 s.
+- **On macOS 14 the abort reason is redacted** from the system log
+  (`<private>`), and on macOS 15 it appears only as `Internal Error`. The
+  `log show` workaround below is not portable, and the reason string is not
+  stable across releases.
+
+Contributed reports are published verbatim, with hostnames and user identifiers
+removed.
 
 ## What the script collects
 
@@ -149,10 +179,28 @@ a timing; keep each dispatch short; prefer a GPU that is not driving a display.
 
 ## Citing
 
-This accompanies a paper describing the diagnosis and the proposed fix.
+**This repository is archived and citable:**
 
-> A. Nejeoui. *Silently Aborted Dispatches in Apple's OpenCL-on-Metal Runtime:
-> Diagnosis, Consequences for Benchmarking, and a Proposed Fix.*
+> A. Nejeoui and A. Bekkari. *opencl-silent-abort: a self-contained reproducer
+> for silently abandoned OpenCL kernel dispatches on Apple silicon*, v1.0.0,
+> 2026. https://doi.org/10.5281/zenodo.22838343
+
+```bibtex
+@software{opencl_silent_abort,
+  author  = {Nejeoui, Abderrazzak and Bekkari, Aissam},
+  title   = {opencl-silent-abort: a self-contained reproducer for silently
+             abandoned {OpenCL} kernel dispatches on {Apple} silicon},
+  version = {1.0.0},
+  year    = {2026},
+  doi     = {10.5281/zenodo.22838343},
+  url     = {https://github.com/nejeoui/opencl-silent-abort}
+}
+```
+
+It accompanies a paper describing the diagnosis and the proposed fix.
+
+> A. Nejeoui and A. Bekkari. *Silently abandoned kernel dispatches in Apple's
+> OpenCL-on-Metal runtime.* Under review.
 
 It was found while validating [MPA-OpenCL](https://github.com/nejeoui/MPA-OpenCl),
 a portable multiple-precision arithmetic library that checks every result
