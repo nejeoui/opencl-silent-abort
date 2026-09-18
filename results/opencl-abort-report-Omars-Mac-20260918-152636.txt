@@ -1,0 +1,59 @@
+Apple OpenCL silent-abort report
+generated 2026-09-18T13:26:36Z  (schema 1)
+
+== machine ==
+model            : Mac14,2
+chip             : Apple M2
+cpu cores        : 8 (4 perf + 4 eff)
+memory           : 8 GB
+arch             : arm64
+
+== os ==
+macOS            : 26.2 (25C56)
+darwin           : 25.2.0
+
+== gpu ==
+gpu              : Chipset Model: Apple M2
+gpu              : Total Number of Cores: 8
+gpu              : Vendor: Apple (0x106b)
+gpu              : Metal Support: Metal 4
+external display : 1 display entries reported
+
+== build ==
+opencl probe     : ok
+metal probe      : ok
+
+== probe results ==
+Same kernel arithmetic through both APIs.  'unwritten' counts work-items
+whose output still holds the 0xDEADBEEF sentinel, i.e. never ran.
+
+-- 20000 work-items, 400000000 iterations each --
+  opencl device    : Apple M2
+  opencl version   : OpenCL 1.2 
+  opencl driver    : 1.2 1.0
+  opencl cu        : 8
+    OpenCL run 0:    0.506s enqueue=0 finish=0 event_status=0 unwritten=20000/20000 (100.0%)
+    OpenCL run 1:    0.513s enqueue=0 finish=0 event_status=0 unwritten=20000/20000 (100.0%)
+    OpenCL run 2:    0.517s enqueue=0 finish=0 event_status=0 unwritten=20000/20000 (100.0%)
+  metal device     : Apple M2
+    Metal  run 0:   30.463s status=Error     error=Impacting Interactivity (0000000e:kIOGPUCommandBufferCallbackErrorImpactingInteractivity) unwritten=20000/20000 (100.0%)
+    Metal  run 1:   69.898s status=Completed error=(nil) unwritten=0/20000 (0.0%)
+    Metal  run 2:   69.660s status=Completed error=(nil) unwritten=0/20000 (0.0%)
+
+== macOS log, command-buffer aborts during this run ==
+predicate: eventMessage CONTAINS "command buffer was aborted"  (last 4m)
+
+  2026-09-18 15:26:39.594106+0200 0x13570e7  Error       0x0                  88289  0    ocl: (Metal) Execution of the command buffer was aborted due to an error during execution. Impacting Interactivity (0000000e:kIOGPUCommandBufferCallbackErrorImpactingInteractivity)
+  2026-09-18 15:26:40.108049+0200 0x13570e7  Error       0x0                  88289  0    ocl: (Metal) Execution of the command buffer was aborted due to an error during execution. Impacting Interactivity (0000000e:kIOGPUCommandBufferCallbackErrorImpactingInteractivity)
+  2026-09-18 15:26:40.626952+0200 0x13570e8  Error       0x0                  88289  0    ocl: (Metal) Execution of the command buffer was aborted due to an error during execution. Impacting Interactivity (0000000e:kIOGPUCommandBufferCallbackErrorImpactingInteractivity)
+  2026-09-18 15:27:11.538972+0200 0x1357119  Error       0x0                  88295  0    mtl: (Metal) Execution of the command buffer was aborted due to an error during execution. Impacting Interactivity (0000000e:kIOGPUCommandBufferCallbackErrorImpactingInteractivity)
+
+abort log lines  : 4
+
+== verdict ==
+OpenCL dispatches reporting success with unwritten output : 3
+Metal dispatches reporting Error                          : 1
+RESULT: REPRODUCED -- OpenCL reported success for dispatches that did not
+        run, while Metal reported the abort on this same machine.
+
+-- end of report --
