@@ -1,7 +1,7 @@
 {
   "upload_type": "software",
   "title": "opencl-silent-abort: a self-contained reproducer for silently abandoned OpenCL kernel dispatches on Apple silicon",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "language": "eng",
   "access_right": "open",
   "license": "mit",

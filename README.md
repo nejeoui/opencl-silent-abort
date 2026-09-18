@@ -1,6 +1,6 @@
 # macOS OpenCL silently reports success for aborted dispatches
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22838343.svg)](https://doi.org/10.5281/zenodo.22838343)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22838342.svg)](https://doi.org/10.5281/zenodo.22838342)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 **On macOS, Apple's OpenCL can report that a kernel finished successfully when
@@ -182,17 +182,20 @@ a timing; keep each dispatch short; prefer a GPU that is not driving a display.
 **This repository is archived and citable:**
 
 > A. Nejeoui and A. Bekkari. *opencl-silent-abort: a self-contained reproducer
-> for silently abandoned OpenCL kernel dispatches on Apple silicon*, v1.0.0,
-> 2026. https://doi.org/10.5281/zenodo.22838343
+> for silently abandoned OpenCL kernel dispatches on Apple silicon*, v1.0.1,
+> 2026. https://doi.org/10.5281/zenodo.22838342
+
+The DOI above is the *concept* DOI: it always resolves to the latest version.
+To cite this exact release, use the version DOI shown on its Zenodo record.
 
 ```bibtex
 @software{opencl_silent_abort,
   author  = {Nejeoui, Abderrazzak and Bekkari, Aissam},
   title   = {opencl-silent-abort: a self-contained reproducer for silently
              abandoned {OpenCL} kernel dispatches on {Apple} silicon},
-  version = {1.0.0},
+  version = {1.0.1},
   year    = {2026},
-  doi     = {10.5281/zenodo.22838343},
+  doi     = {10.5281/zenodo.22838342},
   url     = {https://github.com/nejeoui/opencl-silent-abort}
 }
 ```
