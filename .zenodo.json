@@ -1,0 +1,43 @@
+{
+  "upload_type": "software",
+  "title": "opencl-silent-abort: a self-contained reproducer for silently abandoned OpenCL kernel dispatches on Apple silicon",
+  "version": "1.0.0",
+  "language": "eng",
+  "access_right": "open",
+  "license": "mit",
+  "creators": [
+    {
+      "name": "Nejeoui, Abderrazzak",
+      "affiliation": "National School of Applied Sciences, Cadi Ayyad University, Marrakesh, Morocco",
+      "orcid": "0009-0000-6004-1777"
+    },
+    {
+      "name": "Bekkari, Aissam",
+      "affiliation": "National School of Applied Sciences, Cadi Ayyad University, Marrakesh, Morocco",
+      "orcid": "0009-0000-1400-6962"
+    }
+  ],
+  "description": "<p>On macOS, Apple's OpenCL runtime can report that a kernel dispatch finished successfully when the GPU never ran it. The output buffer comes back untouched, yet <strong>clEnqueueNDRangeKernel</strong>, <strong>clFinish</strong> and <strong>CL_EVENT_COMMAND_EXECUTION_STATUS</strong> all indicate success. The cause is not the kernel: macOS aborts the Metal command buffer backing the dispatch when the compute work starves the display, and Apple's OpenCL-on-Metal layer does not propagate the termination. Metal, one layer down, does report it.</p><p>This repository contains a single self-contained shell script, <strong>apple_opencl_abort_probe.sh</strong>, that reproduces and diagnoses the behaviour on any Mac in about a minute. It embeds two probe programs implementing the <em>same</em> kernel arithmetic over the same grid, one in OpenCL C and one in Metal Shading Language, compiles them with the system compiler, runs a load ladder, fills every output buffer with a 0xDEADBEEF sentinel so that work-items which never ran can be counted exactly, extracts the corresponding macOS unified-log entries, and prints a one-line verdict: reproduced, reproduced on the OpenCL side only, not reproduced, or not triggered. It requires no repository checkout, no network access and no credentials, and a machine that tolerates the load reports a meaningful negative result rather than a failure.</p><p>Also archived here are the machine reports collected so far, which are the complete raw output behind the measurements reported in the accompanying paper: four Apple silicon machines spanning two chip generations (M1, M1 Max, M2), three major macOS releases (14.1.1, 15.3, 26.2, 26.3.1) and GPU core counts from 8 to 32. Across them, 21 OpenCL dispatches reported CL_COMPLETE having written none of their 20000 work-items; 17 of those returned within 0.504-0.537 s (mean 0.520 s, standard deviation 0.009 s), invariant across machine, operating system and a 20x range of requested work.</p><p>An aborted dispatch is fast precisely because it did no work, so a benchmark that measures time without verifying results against a reference records its largest speedups for the runs that failed most completely. The repository is MIT-licensed so that it can be copied freely into vendor bug reports and third-party test harnesses, and it accepts contributed reports from other machines, including machines where the behaviour does not occur.</p>",
+  "keywords": [
+    "OpenCL",
+    "Metal",
+    "Apple silicon",
+    "macOS",
+    "GPU computing",
+    "run-time systems",
+    "system software",
+    "API conformance",
+    "silent failure",
+    "benchmarking",
+    "reproducer"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "10.5281/zenodo.22760636",
+      "relation": "references",
+      "resource_type": "software",
+      "scheme": "doi"
+    }
+  ],
+  "notes": "Reported to Apple through Feedback Assistant as FB24808475, with the reproducer and a diagnostic report, before publication. All findings were obtained from retail machines using documented, public interfaces: no Apple binary was disassembled, decompiled or patched, no protection measure was circumvented, and no Apple code is redistributed. This is a correctness defect, not a security vulnerability. Machine reports contributed by third parties are published with their consent, with hostnames and user identifiers removed."
+}
